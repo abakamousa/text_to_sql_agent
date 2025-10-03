@@ -41,7 +41,8 @@ python -m pip install --upgrade pip
 python -m pip install .
 ```
 
-Configuration (.env)
+# Configuration (.env)
+## frontend
 - Copy the example files and update:
   - Root env: [.env.example](.env.example) -> .env
   - Frontend env: [frontend/.env.example](frontend/.env.example) -> frontend/.env
@@ -50,7 +51,7 @@ Configuration (.env)
   - SQL_CONNECTION_STRING — used by [`sql_executor.executor.SQLExecutor`](backend/sql_executor/executor.py).
   - APPINSIGHTS_KEY, ENVIRONMENT — optional monitoring/settings in [`models.settings.settings`](backend/models/settings.py).
 
-Configuration (.env)
+## backend
 - Copy the example files and update:
   - Root env: [.env.example](.env.example) -> .env
   - Frontend env: [frontend/.env.example](frontend/.env.example) -> frontend/.env
