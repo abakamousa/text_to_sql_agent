@@ -1,0 +1,36 @@
+[project]
+name = "text-to-sql-agent"
+version = "0.1.0"
+description = "Text-to-SQL agent with LangChain, Azure Functions, and Streamlit frontend"
+authors = [
+    { name = "ABOUBAKAR Moussa", email = "abakamousa@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "azure-functions",
+    "langchain",
+    "langchain-openai",
+    "streamlit",
+    "requests",
+    "pyodbc",
+    "azure-identity",
+    "azure-keyvault-secrets",
+    "sqlparse",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+    "ruff",   # 🧹 Ruff for linting/formatting
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "double"
+
+
