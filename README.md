@@ -26,14 +26,22 @@ Lightweight demo that converts natural-language queries into SQL, validates them
 - An Azure OpenAI deployment configured (or local LLM) and a reachable Azure SQL instance
 
 # Install dependencies
-1. Create & activate a virtual environment:
+1. Create a virtual environment:
 ```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
+uv  venv 
 ```
+2. Activate the virtual environment:
+```bash
+# Windows (PowerShell):
+.\venv\Scripts\Activate
+```
+
+3. Install required dependencies using uv:
+```bash
+uv sync
+```
+
+This will automatically install all the dependencies from pyproject.toml
 
 2. Install from the pyproject dependencies:
 ```bash
