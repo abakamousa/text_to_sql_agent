@@ -1,0 +1,12 @@
+blocked_keywords:
+  - DROP
+  - DELETE
+  - TRUNCATE
+  - ALTER
+  - UPDATE
+
+allowed_tables:
+  - CUSTOMERS
+  - ORDERS
+  - PRODUCTS
+  - SALES
