@@ -7,7 +7,7 @@ Lightweight demo that converts natural-language queries into SQL, validates them
 
 <img width="1664" height="672" alt="text_to_agent_archi drawio" src="https://github.com/user-attachments/assets/adf036c4-2846-4201-a675-f3da0b83e255" />
 
-Quick overview of components
+# Quick overview of components
 - Azure Function API: [backend/function_app.py](backend/function_app.py) exposing the HTTP endpoint implemented by the `query_agent` function ([`function_app.query_agent`](backend/function_app.py)).
 - Orchestrator / Agent: Agent construction and run entry point in [backend/orchestrator/agent.py](backend/orchestrator/agent.py) — see [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py).
 - Tools used by the agent: [backend/orchestrator/tools.py](backend/orchestrator/tools.py) — includes [`orchestrator.tools.run_sql_tool`](backend/orchestrator/tools.py), [`orchestrator.tools.guardrails_tool`](backend/orchestrator/tools.py), and [`orchestrator.tools.regenerator_tool`](backend/orchestrator/tools.py).
@@ -19,13 +19,13 @@ Quick overview of components
 - SQL regenerator: repair/fix logic for failing SQL in [backend/regenerator/fixer.py](backend/regenerator/fixer.py) — [`regenerator.fixer.SQLRegenerator`](backend/regenerator/fixer.py).
 - Frontend: Streamlit demo at [frontend/streamlit_app.py](frontend/streamlit_app.py). Request/response models are in [frontend/models/api_models.py](frontend/models/api_models.py) — [`frontend.models.api_models.SQLQueryRequest`](frontend/models/api_models.py) and [`frontend.models.api_models.SQLQueryResponse`](frontend/models/api_models.py).
 
-Prerequisites
+# Prerequisites
 - Python >= 3.11
 - Azure Functions Core Tools (if running the Azure Function locally)
 - ODBC Driver for SQL Server (for pyodbc)
 - An Azure OpenAI deployment configured (or local LLM) and a reachable Azure SQL instance
 
-Install dependencies
+# Install dependencies
 1. Create & activate a virtual environment:
 ```bash
 python -m venv .venv
@@ -59,7 +59,7 @@ Configuration (.env)
   - SQL_CONNECTION_STRING — used by [`sql_executor.executor.SQLExecutor`](backend/sql_executor/executor.py).
   - APPINSIGHTS_KEY, ENVIRONMENT — optional monitoring/settings in [`models.settings.settings`](backend/models/settings.py).
 
-Run locally (development)
+# Run locally (development)
 - Streamlit UI:
 ```bash
 streamlit run frontend/streamlit_app.py
@@ -94,13 +94,13 @@ python -m pytest
 ```
 
 
-Notes, limitations & extension points
+# Notes, limitations & extension points
 - Schema caching: current [`sql_executor.schema_cache.SchemaCache`](backend/sql_executor/schema_cache.py) is minimal — extend with `load_schema` / `get_schema` helpers if you rely on them (the orchestrator expects such helpers in some places).
 - Guardrails are rule-based via [backend/guardrails/rules.yaml](backend/guardrails/rules.yaml). Customize allowed/blocked lists.
 - Chains & prompts are in [backend/orchestrator/chains.py](backend/orchestrator/chains.py) and [backend/orchestrator/prompts/](backend/orchestrator/prompts/). Tweak prompts to change SQL generation/regeneration behavior.
 - LLM configuration: [`services.openai_client.OpenAIClient`](backend/services/openai_client.py) wraps Azure Chat OpenAI via LangChain.
 
-Files of interest
+# Files of interest
 - [pyproject.toml](pyproject.toml)
 - [backend/function_app.py](backend/function_app.py)
 - [backend/orchestrator/agent.py](backend/orchestrator/agent.py) — [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py)
