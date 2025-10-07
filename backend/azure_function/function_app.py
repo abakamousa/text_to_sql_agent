@@ -50,3 +50,5 @@ def query_agent(req: func.HttpRequest) -> func.HttpResponse:
             status_code=500,
             mimetype="application/json",
         )
+
+

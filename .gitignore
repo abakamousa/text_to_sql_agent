@@ -1,1 +1,83 @@
+# -------------------------
+# Python & Environment Files
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.log
+*.tmp
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
 .env
+.env.*
+.envrc
+
+# -------------------------
+# Azure Functions
+# -------------------------
+# Local settings & keys
+local.settings.json
+# Azure function artifacts
+bin/
+obj/
+*.user
+*.suo
+
+# -------------------------
+# uv / Poetry / Pip
+# -------------------------
+.uv/
+.uv-cache/
+.uv_lock/
+*.lock
+pip-wheel-metadata/
+pip-log.txt
+
+# -------------------------
+# IDEs & Editors
+# -------------------------
+.vscode/
+.idea/
+.spyproject/
+*.code-workspace
+
+# -------------------------
+# Frontend (Streamlit / Chainlit)
+# -------------------------
+streamlit/*.log
+.streamlit/
+frontend/.streamlit/
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+# -------------------------
+# OS / System Files
+# -------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -------------------------
+# Tests & Coverage
+# -------------------------
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.cache/
+
+# -------------------------
+# Temporary & Misc
+# -------------------------
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej

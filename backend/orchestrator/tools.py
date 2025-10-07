@@ -1,7 +1,7 @@
 from langchain.tools import tool
-from sql_executor.executor import run_query
+from sql_executor.executor import SQLExecutor
 from sql_executor.schema_cache import SchemaCache
-from guardrails import Guardrails
+from guardrails.validator import Guardrails
 from orchestrator.chains import get_regeneration_chain
 
 # Initialize guardrails and schema cache
@@ -11,7 +11,8 @@ schema_cache.load_schema()  # preload all tables/columns
 
 @tool("run_sql", return_direct=True)
 def run_sql_tool(query: str) -> dict:
-    return run_query(query)
+    executor = SQLExecutor()  # create a new instance each time to avoid stale connections
+    return executor.run_query(query)
 
 @tool("guardrails", return_direct=True)
 def guardrails_tool(query: str) -> str:

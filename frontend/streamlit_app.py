@@ -23,7 +23,7 @@ with st.form("query_form"):
 if submitted and nl_query.strip():
     try:
         # Validate request with Pydantic
-        payload = SQLQueryRequest(query=nl_query).dict()
+        payload = SQLQueryRequest(query=nl_query).model_dump()
 
         with st.spinner("🔎 Thinking..."):
             response = requests.post(API_URL, json=payload, timeout=60)

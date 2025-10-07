@@ -1,11 +1,11 @@
-import sys
-from sql_executor.executor import run_query
-from guardrails import Guardrails
-from regenerator import SQLRegenerator
+from backend.sql_executor.executor import  SQLExecutor 
+from backend.guardrails.validator import Guardrails
+from backend.regenerator.fixer import SQLRegenerator
 
 def run_sql_executor():
     sql = input("Enter SQL to execute: ")
-    result = run_query(sql)
+    executor = SQLExecutor()
+    result = executor.run_query(sql)
     print("\nResult:")
     print(f"SQL: {result['sql']}")
     print(f"Row count: {result['row_count']}")

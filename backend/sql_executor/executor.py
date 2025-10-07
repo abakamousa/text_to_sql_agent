@@ -8,8 +8,8 @@ class SQLExecutor:
     Returns results as list of dicts.
     """
 
-    def __init__(self, connection_string: str | None = None):
-        self.connection_string = connection_string or settings.sql_connection_string
+    def __init__(self):
+        self.connection_string =  settings. sql_connection_string
         if not self.connection_string:
             raise ValueError("SQL connection string is not set in environment or settings.")
 
@@ -46,9 +46,3 @@ class SQLExecutor:
             "execution_time": execution_time
         }
 
-
-# Singleton-style instance (optional)
-executor = SQLExecutor()
-def run_query(sql: str) -> dict:
-    """Convenience function for tools/orchestrator."""
-    return executor.run_query(sql)

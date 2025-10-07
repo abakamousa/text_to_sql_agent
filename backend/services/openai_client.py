@@ -11,6 +11,7 @@ class OpenAIClient:
         self.deployment_name = deployment_name or settings.azure_openai_deployment
         self.api_version = settings.azure_openai_api_version
         self.endpoint = settings.azure_openai_endpoint
+        self.api_key = settings.azure_openai_api_key
         self.temperature = temperature
 
         if not self.endpoint or not self.deployment_name:
