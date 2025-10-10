@@ -1,4 +1,4 @@
-from services.openai_client import OpenAIClient
+from backend.services.openai_client import OpenAIClient
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from pathlib import Path

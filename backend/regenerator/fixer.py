@@ -1,6 +1,6 @@
-from sql_executor.schema_cache import SchemaCache
-from guardrails import Guardrails
-from orchestrator.chains import get_regeneration_chain
+from backend.sql_executor.schema_cache import SchemaCache
+from backend.guardrails.validator import Guardrails
+from backend.orchestrator.chains import get_regeneration_chain
 
 class SQLRegenerator:
     """

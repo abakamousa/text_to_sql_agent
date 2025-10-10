@@ -18,6 +18,9 @@ dependencies = [
     "azure-identity",
     "azure-keyvault-secrets",
     "sqlparse",
+    "python-dotenv>=1.1.1",
+    "pydantic-settings>=2.11.0",
+    "load-dotenv>=0.1.0",
 ]
 
 [tool.uv]
@@ -33,4 +36,6 @@ target-version = "py311"
 [tool.ruff.format]
 quote-style = "double"
 
-
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend", "frontend"]

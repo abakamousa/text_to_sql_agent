@@ -1,27 +1,26 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
+from backend.utils.env_loader import load_env
+import logging
 
+# Ensure .env is loaded before Pydantic initializes
+ENV_PATH = load_env(".env")
 
 class Settings(BaseSettings):
-    """Central settings loaded from environment or .env file."""
+    model_config = SettingsConfigDict(
+        env_file=ENV_PATH,
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=True,
+    )
 
-    # Azure OpenAI
-    azure_openai_deployment: str
-    azure_openai_endpoint: str
-    azure_openai_api_version: str = "2024-06-01"
+    azure_openai_deployment: str = Field(..., env="AZURE_OPENAI_DEPLOYMENT")
+    azure_openai_endpoint: str = Field(..., env="AZURE_OPENAI_ENDPOINT")
+    azure_openai_api_key: str = Field(..., env="AZURE_OPENAI_API_KEY")
+    azure_openai_api_version: str = Field("2024-06-01", env="AZURE_OPENAI_API_VERSION")
+    sql_connection_string: str = Field(..., env="SQL_CONNECTION_STRING")
+    appinsights_key: str | None = Field(None, env="APPINSIGHTS_KEY")
+    environment: str = Field("development", env="ENVIRONMENT")
 
-    # Azure SQL
-    sql_connection_string: str | None = None  # or use Key Vault
-
-    # Azure Monitoring
-    appinsights_key: str | None = None
-
-    # General
-    environment: str = "development"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-
-
-# Singleton-style accessor
 settings = Settings()
+logging.info(f"✅ Settings initialized from: {ENV_PATH}")
