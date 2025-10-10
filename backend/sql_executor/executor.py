@@ -1,6 +1,6 @@
 import pyodbc
 import time
-from models.settings import settings
+from backend.models.settings import settings
 
 class SQLExecutor:
     """
@@ -9,7 +9,7 @@ class SQLExecutor:
     """
 
     def __init__(self):
-        self.connection_string =  settings. sql_connection_string
+        self.connection_string =  settings.sql_connection_string
         if not self.connection_string:
             raise ValueError("SQL connection string is not set in environment or settings.")
 

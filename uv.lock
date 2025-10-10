@@ -684,6 +684,18 @@ wheels = [
 ]
 
 [[package]]
+name = "load-dotenv"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dotenv" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d7/95/055d123dde74bd54b99b27a3c2d8c6e218f544e0bd437480f61ccf85a07f/load-dotenv-0.1.0.tar.gz", hash = "sha256:bbe5f40072d4a61eadca66de6c222df5a2d935d6d41b703be1ff75396f635145", size = 6404, upload-time = "2022-09-02T19:55:01.349Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/2e/268a528dfa1f76999435634b0453fdd917ea878a818a6d5981632f7acffb/load_dotenv-0.1.0-py3-none-any.whl", hash = "sha256:614803f720153fb8a5f97124a72aaa3930a67aa5547cbe8603d01ea7f9ac1adf", size = 7175, upload-time = "2022-09-02T19:54:59.85Z" },
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1816,6 +1828,7 @@ dependencies = [
     { name = "azure-keyvault-secrets" },
     { name = "langchain" },
     { name = "langchain-openai" },
+    { name = "load-dotenv" },
     { name = "pydantic-settings" },
     { name = "pyodbc" },
     { name = "python-dotenv" },
@@ -1837,6 +1850,7 @@ requires-dist = [
     { name = "azure-keyvault-secrets" },
     { name = "langchain" },
     { name = "langchain-openai" },
+    { name = "load-dotenv", specifier = ">=0.1.0" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
     { name = "pyodbc" },
     { name = "python-dotenv", specifier = ">=1.1.1" },

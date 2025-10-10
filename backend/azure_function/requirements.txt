@@ -1,0 +1,25 @@
+# Azure Functions core
+azure-functions
+
+# LangChain + LLMs
+langchain
+langchain-openai
+openai
+
+# Database
+pyodbc
+sqlparse
+
+# Configuration + Models
+pydantic
+pydantic_settings
+python-dotenv
+pyyaml
+
+# Azure SDKs
+azure-identity
+azure-keyvault-secrets
+
+# Utilities
+requests
+tqdm

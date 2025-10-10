@@ -2,7 +2,7 @@ import logging
 import azure.functions as func
 import json
 
-from orchestrator.agent import run_agent
+from backend.orchestrator.agent import run_agent
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
