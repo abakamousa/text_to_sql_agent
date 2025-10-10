@@ -102,10 +102,10 @@ This script exercises SQL execution, guardrails validation and regeneration flow
 
 - Run Azure Function locally (requires Azure Functions Core Tools):
 ```bash
-# from repo root
+# cd  backend/azure_function
 func start
 ```
-The function app code is at [backend/function_app.py](backend/function_app.py).
+The function app code is at [backend/azure_function/function_app.py](backend/azure_function/function_app.py).
 
 API contract
 - Request model: see [`frontend.models.api_models.SQLQueryRequest`](frontend/models/api_models.py).
