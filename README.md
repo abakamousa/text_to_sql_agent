@@ -7,17 +7,35 @@ Lightweight demo that converts natural-language queries into SQL, validates them
 
 <img width="1664" height="672" alt="text_to_agent_archi drawio" src="https://github.com/user-attachments/assets/adf036c4-2846-4201-a675-f3da0b83e255" />
 
-# Quick overview of components
-- Azure Function API: [backend/function_app.py](backend/function_app.py) exposing the HTTP endpoint implemented by the `query_agent` function ([`function_app.query_agent`](backend/function_app.py)).
-- Orchestrator / Agent: Agent construction and run entry point in [backend/orchestrator/agent.py](backend/orchestrator/agent.py) — see [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py).
-- Tools used by the agent: [backend/orchestrator/tools.py](backend/orchestrator/tools.py) — includes [`orchestrator.tools.run_sql_tool`](backend/orchestrator/tools.py), [`orchestrator.tools.guardrails_tool`](backend/orchestrator/tools.py), and [`orchestrator.tools.regenerator_tool`](backend/orchestrator/tools.py).
-- Chains & prompts: Prompt templates and chain builders in [backend/orchestrator/chains.py](backend/orchestrator/chains.py) — see [`orchestrator.chains.get_sql_generation_chain`](backend/orchestrator/chains.py) and [`orchestrator.chains.get_regeneration_chain`](backend/orchestrator/chains.py). Prompts live under [backend/orchestrator/prompts/](backend/orchestrator/prompts/).
-- OpenAI client wrapper: [backend/services/openai_client.py](backend/services/openai_client.py) — [`services.openai_client.OpenAIClient`](backend/services/openai_client.py).
-- Guardrails: SQL validation rules loader and validator in [backend/guardrails/guardrails.py](backend/guardrails/guardrails.py) — [`guardrails.Guardrails`](backend/guardrails/guardrails.py). Rules file: [backend/guardrails/rules.yaml](backend/guardrails/rules.yaml).
-- SQL execution: low-level executor in [backend/sql_executor/executor.py](backend/sql_executor/executor.py) — see [`sql_executor.executor.SQLExecutor`](backend/sql_executor/executor.py) and convenience [`sql_executor.executor.run_query`](backend/sql_executor/executor.py).
-- Schema cache: simple in-memory schema store in [backend/sql_executor/schema_cache.py](backend/sql_executor/schema_cache.py) — [`sql_executor.schema_cache.SchemaCache`](backend/sql_executor/schema_cache.py). (Note: the project shows calls to `load_schema` / `get_schema` in some places; extend `SchemaCache` if you need those helpers.)
-- SQL regenerator: repair/fix logic for failing SQL in [backend/regenerator/fixer.py](backend/regenerator/fixer.py) — [`regenerator.fixer.SQLRegenerator`](backend/regenerator/fixer.py).
-- Frontend: Streamlit demo at [frontend/streamlit_app.py](frontend/streamlit_app.py). Request/response models are in [frontend/models/api_models.py](frontend/models/api_models.py) — [`frontend.models.api_models.SQLQueryRequest`](frontend/models/api_models.py) and [`frontend.models.api_models.SQLQueryResponse`](frontend/models/api_models.py).
+## 🚀 Features
+
+✅ Converts **natural language queries → SQL statements**  
+✅ Validates SQL using **custom guardrails**  
+✅ Executes against **Azure SQL database**  
+✅ Automatically **regenerates/fixes invalid SQL**  
+✅ Built with **LangChain ReAct** agent pattern  
+✅ Supports **conversation memory** for multi-turn queries  
+✅ Deployed as an **Azure Function API**
+
+
+## 🧠 How It Works
+
+The agent follows a controlled ReAct reasoning loop using LangChain’s AgentExecutor.
+
+- User Input:
+“Show me the total sales per region in 2024.”
+
+- Step 1 – Generate SQL
+Uses sql_generator tool → produces SQL query.
+
+- Step 2 – Validate SQL
+Uses guardrails_tool → ensures correctness and safety.
+
+- Step 3 – Execute SQL
+Uses run_sql_tool → runs against Azure SQL and returns results.
+
+- Step 4 – Regenerate if needed
+If validation fails, uses regenerator_tool up to N times (max_regenerations).
 
 # Prerequisites
 - Python >= 3.11
@@ -103,20 +121,7 @@ python -m pytest
 ```
 
 
-# Notes, limitations & extension points
-- Schema caching: current [`sql_executor.schema_cache.SchemaCache`](backend/sql_executor/schema_cache.py) is minimal — extend with `load_schema` / `get_schema` helpers if you rely on them (the orchestrator expects such helpers in some places).
-- Guardrails are rule-based via [backend/guardrails/rules.yaml](backend/guardrails/rules.yaml). Customize allowed/blocked lists.
-- Chains & prompts are in [backend/orchestrator/chains.py](backend/orchestrator/chains.py) and [backend/orchestrator/prompts/](backend/orchestrator/prompts/). Tweak prompts to change SQL generation/regeneration behavior.
-- LLM configuration: [`services.openai_client.OpenAIClient`](backend/services/openai_client.py) wraps Azure Chat OpenAI via LangChain.
 
-# Files of interest
-- [pyproject.toml](pyproject.toml)
-- [backend/function_app.py](backend/function_app.py)
-- [backend/orchestrator/agent.py](backend/orchestrator/agent.py) — [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py)
-- [backend/orchestrator/tools.py](backend/orchestrator/tools.py)
-- [backend/orchestrator/chains.py](backend/orchestrator/chains.py)
-- [backend/services/openai_client.py](backend/services/openai_client.py) — [`services.openai_client.OpenAIClient`](backend/services/openai_client.py)
-- [backend/sql_executor/executor.py](backend/sql_executor/executor.py) — [`sql_executor.executor.run_query`](backend/sql_executor/executor.py)
-- [backend/regenerator/fixer.py](backend/regenerator/fixer.py) — [`regenerator.fixer.SQLRegenerator`](backend/regenerator/fixer.py)
-- [backend/guardrails/guardrails.py](backend/guardrails/guardrails.py) — [`guardrails.Guardrails`](backend/guardrails/guardrails.py)
-- [frontend/streamlit_app.py](frontend/streamlit_app.py) and [frontend/models/api_models.py](frontend/models/api_models.py)
+# 📜 License
+
+MIT License © 2025 — Developed by Moussa Aboubakar
