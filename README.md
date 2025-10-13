@@ -5,7 +5,8 @@ Lightweight demo that converts natural-language queries into SQL, validates them
 
 # Architecture
 
-<img width="1664" height="672" alt="text_to_agent_archi drawio" src="https://github.com/user-attachments/assets/adf036c4-2846-4201-a675-f3da0b83e255" />
+<img width="1674" height="672" alt="text_to_agent_archi drawio (1)" src="https://github.com/user-attachments/assets/98cbb907-f065-46df-b2e5-d3e7d3bf1e46" />
+
 
 ## 🚀 Features
 
