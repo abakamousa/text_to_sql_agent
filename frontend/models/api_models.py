@@ -8,6 +8,7 @@ class SQLQueryResponse(BaseModel):
     validation: str                     # "VALID" or validation errors
     data: Optional[List[dict]] = None   # Query results as list of dicts
     answer: Optional[str] = None        # LLM-generated answer
+    visualization: Optional[dict] = None # Recommended visualization details
     regenerations_used: Optional[int] = 0
     execution_time: Optional[float] = None  # Query execution time in seconds
 

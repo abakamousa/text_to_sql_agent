@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import os
+import json
 import pandas as pd
 from dotenv import load_dotenv
 from models.api_models import SQLQueryRequest, SQLQueryResponse
@@ -70,7 +71,39 @@ if submitted and nl_query.strip():
                         st.json(df_data)
                 else:
                     st.info("No data was returned from the SQL query.")
+                
+                # --- Visualization Section ---
+                st.subheader("📈 Recommended Visualization")
+                #data = data.data #result.get("data", [])
+                viz = data.visualization #result.get("visualization", {})
+                if isinstance(viz, str):
+                    try:
+                        viz = json.loads(viz)
+                    except json.JSONDecodeError:
+                        viz = {"chart_type": "table"}
 
+                if not data:
+                    st.info("No data to visualize.")
+                else:
+                    df = pd.DataFrame(data.data)
+                    chart_type = viz.get("chart_type", "table")
+                    x_axis = viz.get("x_axis")
+                    y_axis = viz.get("y_axis")
+                    title = viz.get("title", "Data Visualization")
+
+                    st.markdown(f"### {title}")
+
+                    if chart_type == "bar" and x_axis and y_axis:
+                        st.bar_chart(df.set_index(x_axis)[y_axis])
+                    elif chart_type == "line" and x_axis and y_axis:
+                        st.line_chart(df.set_index(x_axis)[y_axis])
+                    elif chart_type == "area" and x_axis and y_axis:
+                        st.area_chart(df.set_index(x_axis)[y_axis])
+                    elif chart_type == "scatter" and x_axis and y_axis:
+                        st.scatter_chart(df, x=x_axis, y=y_axis)
+                    else:
+                        st.dataframe(df)
+                
                 # --- LLM Answer Section ---
                 st.subheader("🗣️ LLM-Generated Answer")
                 if data.answer:

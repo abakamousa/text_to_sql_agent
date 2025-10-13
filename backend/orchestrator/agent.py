@@ -5,11 +5,13 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory
 from backend.services.openai_client import OpenAIClient
 from backend.utils.logger import log_with_task
+#from backend.visualization.visualisation_recommander import recommend_visualizations
 from backend.orchestrator.toolset import (
     sql_generator,
     run_sql_tool,
     guardrails_tool,
     regenerator_tool,
+    visualization_tool,
     answer_generator_tool,
 )
 
@@ -48,7 +50,9 @@ def build_agent():
         guardrails_tool,
         regenerator_tool,
         run_sql_tool,
+        visualization_tool,
         answer_generator_tool,
+        
     ]
 
     memory = ConversationBufferMemory(
@@ -62,8 +66,8 @@ def build_agent():
         (
             "system",
             (
-                "You are an expert SQL agent. You generate, validate, and execute SQL, "
-                "then summarize results with natural language. Validate SQL before execution."
+                "You are an expert SQL and data visualization agent. You generate SQL queries, validate them, execute them, summarize results, "
+                "and recommend visualizations. Always ensure SQL safety and interpretability."
             ),
         ),
         MessagesPlaceholder(variable_name="chat_history"),
@@ -81,8 +85,12 @@ def build_agent():
         handle_parsing_errors=True,
     )
 
+
+# =====================================
+# 🚀 Main Execution
+# =====================================
 def run_agent(nl_query: str, chat_history=None) -> dict:
-    """Execute NL query → generate SQL → validate → execute → LLM answer."""
+    """Execute full pipeline: NL → SQL → Validate → Execute → Answer → Visualization."""
     try:
         agent = build_agent()
         #payload = {"input": nl_query, "chat_history": chat_history or []}
@@ -92,6 +100,7 @@ def run_agent(nl_query: str, chat_history=None) -> dict:
         guard_tool = get_tool_by_name(agent, "guardrails_tool")
         regen_tool = get_tool_by_name(agent, "regenerator_tool")
         run_sql = get_tool_by_name(agent, "run_sql_tool")
+        viz_tool = get_tool_by_name(agent, "visualization_tool")
         answer_tool = get_tool_by_name(agent, "answer_generator_tool")
         log_with_task(logging.INFO, f"Tools loaded successfully ", task="Tools-loading")
 
@@ -162,14 +171,26 @@ def run_agent(nl_query: str, chat_history=None) -> dict:
         #logging.info(f"Generating answer with data: {answer_input}")
         answer = answer_tool.func(json.dumps(answer_input))
         log_with_task(logging.INFO, "SQL query executed and answer generated successfully.", task="Agent-Finish")
+        
+    
+        # Step 5: Recommend Visualization
+        viz_input = {
+            "nl_query": nl_query,
+            "sql_query": sql_query,
+            "data": data or [{"info": "No rows returned"}],
+        }       
+        viz_recommendation = viz_tool.func(json.dumps(viz_input))
+        log_with_task(logging.INFO, "Visualization recommended successfully.", task="Visualization-Recommendation") 
         return {
             "sql_query": sql_query,
             "validation": "VALID",
             "data": data,
             "answer": answer,
+            "visualization": viz_recommendation,
             "regenerations_used": regenerations,
             "execution_time": execution_time
-        }
+        }   
+
 
     except Exception as e:
         log_with_task(logging.ERROR, f"Agent execution failed: {e}", task="Agent-Execution")
