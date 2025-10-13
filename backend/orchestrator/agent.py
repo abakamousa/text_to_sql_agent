@@ -1,34 +1,56 @@
+import logging
+import json
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory
 from backend.services.openai_client import OpenAIClient
+from backend.utils.logger import log_with_task
 from backend.orchestrator.toolset import (
     sql_generator,
     run_sql_tool,
     guardrails_tool,
     regenerator_tool,
+    answer_generator_tool,
 )
 
-import logging
-
 logger = logging.getLogger(__name__)
+MAX_REGENERATIONS = 2  # Control number of invalid SQL regenerations
+PROJECT_TASK = "SQL-Agent"
+
+from decimal import Decimal
+
+def convert_decimals(obj):
+    """Recursively convert Decimal to float in dict/list structures."""
+    if isinstance(obj, list):
+        return [convert_decimals(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        return float(obj)
+    else:
+        return obj
+    
+
+def get_tool_by_name(agent, name: str):
+    """Helper to fetch a tool object by its name."""
+    for tool in agent.tools:
+        if tool.name == name:
+            return tool
+    raise ValueError(f"Tool '{name}' not found among: {[t.name for t in agent.tools]}")
 
 def build_agent():
-    """Build and return a ReAct-style SQL agent with memory and tools."""
-
-    # Initialize LLM (Azure OpenAI client)
+    """Build a ReAct-style SQL agent with memory and tools."""
     service = OpenAIClient()
     llm = service.get_llm()
 
-    # Define available tools
     available_tools = [
         sql_generator,
-        run_sql_tool,
         guardrails_tool,
         regenerator_tool,
+        run_sql_tool,
+        answer_generator_tool,
     ]
 
-    # 🧠 Conversation memory
     memory = ConversationBufferMemory(
         memory_key="chat_history",
         input_key="input",
@@ -36,15 +58,12 @@ def build_agent():
         return_messages=True,
     )
 
-    # 🧩 Agent prompt with proper structure
     prompt = ChatPromptTemplate.from_messages([
         (
             "system",
             (
-                "You are an expert SQL assistant. You can generate, validate, and execute SQL queries "
-                "using the tools provided.\n"
-                "Make sure all SQL statements are valid before execution. "
-                "If validation fails, use 'regenerator_tool' to correct it."
+                "You are an expert SQL agent. You generate, validate, and execute SQL, "
+                "then summarize results with natural language. Validate SQL before execution."
             ),
         ),
         MessagesPlaceholder(variable_name="chat_history"),
@@ -52,11 +71,9 @@ def build_agent():
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
 
-    # ✅ Create the new tool-aware agent (no manual scratchpad formatting needed)
     agent = create_tool_calling_agent(llm=llm, tools=available_tools, prompt=prompt)
 
-    # ✅ Wrap in an AgentExecutor with memory and verbose logging
-    agent_executor = AgentExecutor(
+    return AgentExecutor(
         agent=agent,
         tools=available_tools,
         memory=memory,
@@ -64,37 +81,96 @@ def build_agent():
         handle_parsing_errors=True,
     )
 
-    return agent_executor
-
-
 def run_agent(nl_query: str, chat_history=None) -> dict:
-    """
-    Execute a natural language query through the ReAct SQL agent.
-    Supports chat memory for multi-turn interactions.
-    """
+    """Execute NL query → generate SQL → validate → execute → LLM answer."""
     try:
         agent = build_agent()
+        #payload = {"input": nl_query, "chat_history": chat_history or []}
 
-        payload = {
-            "input": nl_query,
-            "chat_history": chat_history or [],
+        # Fetch tools
+        sql_gen_tool = get_tool_by_name(agent, "sql_generator")
+        guard_tool = get_tool_by_name(agent, "guardrails_tool")
+        regen_tool = get_tool_by_name(agent, "regenerator_tool")
+        run_sql = get_tool_by_name(agent, "run_sql_tool")
+        answer_tool = get_tool_by_name(agent, "answer_generator_tool")
+        log_with_task(logging.INFO, f"Tools loaded successfully ", task="Tools-loading")
+
+        # Step 1: Generate SQL
+        sql_query = sql_gen_tool.func(nl_query)
+        log_with_task(logging.INFO, f"Generated SQL: {sql_query}", task="SQL-Generation")
+
+        # Step 2: Validate & Regenerate if necessary
+        validation_result = guard_tool.func(sql_query)
+        regenerations = 0
+        log_with_task(logging.INFO, f"Validation of the generated SQL request with guardrail validator", task="SQL-Validation")
+
+        while validation_result != "VALID" and regenerations < MAX_REGENERATIONS:
+            log_with_task(logging.WARNING, f"SQL invalid. Regenerating (attempt {regenerations + 1})...", task="SQL-Validation")
+            regen_input = {
+                "nl_query": nl_query,
+                "bad_sql": sql_query,
+                "errors": validation_result
+            }
+            sql_query = regen_tool.func(json.dumps(regen_input))
+            validation_result = guard_tool.func(sql_query)
+            regenerations += 1
+
+        if validation_result != "VALID":
+            log_with_task(logging.ERROR, "SQL could not be validated after multiple attempts.", task="SQL-Validation")
+            return {
+                "sql_query": sql_query,
+                "validation": validation_result,
+                "error": "SQL could not be validated after multiple attempts.",
+                "regenerations_used": regenerations
+            }
+
+        # Step 3: Execute SQL
+        try:
+            log_with_task(logging.INFO, f"Executing SQL query: {sql_query}", task="SQL-Execution")
+            query_result = run_sql.func(sql_query)
+            data = query_result.get("rows", [])
+            execution_time = query_result.get("execution_time")
+        except Exception as e:
+            log_with_task(logging.ERROR, f"SQL execution failed: {e}", task="SQL-Execution")
+            return {
+                "sql_query": sql_query,
+                "validation": "VALID",
+                "error": str(e),
+                "regenerations_used": regenerations,
+            }
+
+        data = convert_decimals(query_result.get("rows", [])) 
+        if not data:
+            log_with_task(logging.INFO, "No data returned from SQL query.", task="SQL-Execution")
+            return {
+                "sql_query": sql_query,
+                "validation": "VALID",
+                "data": [],
+                "answer": "No data returned from the database.",
+                "regenerations_used": regenerations,
+                "execution_time": execution_time
+            }
+
+        log_with_task(logging.INFO, f"SQL executed successfully. Rows returned: {len(data)}", task="SQL-Execution")
+        # Step 4: Generate LLM answer using retrieved data
+        
+        answer_input = {
+            "query": nl_query,
+            "sql": sql_query or "No SQL generated",
+            "data": data or [{"info": "No rows returned"}],
         }
-
-        result = agent.invoke(payload)
-
-        # Safely convert chat memory messages to serializable form
-        memory_messages = []
-        for msg in agent.memory.chat_memory.messages:
-            memory_messages.append({
-                "type": msg.__class__.__name__,
-                "content": getattr(msg, "content", None)
-            })
-
+        #logging.info(f"Generating answer with data: {answer_input}")
+        answer = answer_tool.func(json.dumps(answer_input))
+        log_with_task(logging.INFO, "SQL query executed and answer generated successfully.", task="Agent-Finish")
         return {
-            "result": result.get("output", str(result)),
-            "memory": memory_messages
+            "sql_query": sql_query,
+            "validation": "VALID",
+            "data": data,
+            "answer": answer,
+            "regenerations_used": regenerations,
+            "execution_time": execution_time
         }
 
     except Exception as e:
-        logger.exception(f"Agent execution failed: {e}")
+        log_with_task(logging.ERROR, f"Agent execution failed: {e}", task="Agent-Execution")
         return {"error": str(e)}

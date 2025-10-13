@@ -1,182 +1,230 @@
 {
-  "Address": [
-    "AddressID",
-    "AddressLine1",
-    "AddressLine2",
-    "City",
-    "StateProvince",
-    "CountryRegion",
-    "PostalCode",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "BuildVersion": [
-    "SystemInformationID",
-    "Database Version",
-    "VersionDate",
-    "ModifiedDate"
-  ],
-  "Customer": [
-    "CustomerID",
-    "NameStyle",
-    "Title",
-    "FirstName",
-    "MiddleName",
-    "LastName",
-    "Suffix",
-    "CompanyName",
-    "SalesPerson",
-    "EmailAddress",
-    "Phone",
-    "PasswordHash",
-    "PasswordSalt",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "CustomerAddress": [
-    "CustomerID",
-    "AddressID",
-    "AddressType",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "database_firewall_rules": [
-    "id",
-    "name",
-    "start_ip_address",
-    "end_ip_address",
-    "create_date",
-    "modify_date"
-  ],
-  "ErrorLog": [
-    "ErrorLogID",
-    "ErrorTime",
-    "UserName",
-    "ErrorNumber",
-    "ErrorSeverity",
-    "ErrorState",
-    "ErrorProcedure",
-    "ErrorLine",
-    "ErrorMessage"
-  ],
-  "Product": [
-    "ProductID",
-    "Name",
-    "ProductNumber",
-    "Color",
-    "StandardCost",
-    "ListPrice",
-    "Size",
-    "Weight",
-    "ProductCategoryID",
-    "ProductModelID",
-    "SellStartDate",
-    "SellEndDate",
-    "DiscontinuedDate",
-    "ThumbNailPhoto",
-    "ThumbnailPhotoFileName",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "ProductCategory": [
-    "ProductCategoryID",
-    "ParentProductCategoryID",
-    "Name",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "ProductDescription": [
-    "ProductDescriptionID",
-    "Description",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "ProductModel": [
-    "ProductModelID",
-    "Name",
-    "CatalogDescription",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "ProductModelProductDescription": [
-    "ProductModelID",
-    "ProductDescriptionID",
-    "Culture",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "SalesOrderDetail": [
-    "SalesOrderID",
-    "SalesOrderDetailID",
-    "OrderQty",
-    "ProductID",
-    "UnitPrice",
-    "UnitPriceDiscount",
-    "LineTotal",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "SalesOrderHeader": [
-    "SalesOrderID",
-    "RevisionNumber",
-    "OrderDate",
-    "DueDate",
-    "ShipDate",
-    "Status",
-    "OnlineOrderFlag",
-    "SalesOrderNumber",
-    "PurchaseOrderNumber",
-    "AccountNumber",
-    "CustomerID",
-    "ShipToAddressID",
-    "BillToAddressID",
-    "ShipMethod",
-    "CreditCardApprovalCode",
-    "SubTotal",
-    "TaxAmt",
-    "Freight",
-    "TotalDue",
-    "Comment",
-    "rowguid",
-    "ModifiedDate"
-  ],
-  "vGetAllCategories": [
-    "ParentProductCategoryName",
-    "ProductCategoryName",
-    "ProductCategoryID"
-  ],
-  "vProductAndDescription": [
-    "ProductID",
-    "Name",
-    "ProductModel",
-    "Culture",
-    "Description"
-  ],
-  "vProductModelCatalogDescription": [
-    "ProductModelID",
-    "Name",
-    "Summary",
-    "Manufacturer",
-    "Copyright",
-    "ProductURL",
-    "WarrantyPeriod",
-    "WarrantyDescription",
-    "NoOfYears",
-    "MaintenanceDescription",
-    "Wheel",
-    "Saddle",
-    "Pedal",
-    "BikeFrame",
-    "Crankset",
-    "PictureAngle",
-    "PictureSize",
-    "ProductPhotoID",
-    "Material",
-    "Color",
-    "ProductLine",
-    "Style",
-    "RiderExperience",
-    "rowguid",
-    "ModifiedDate"
-  ]
+  "dbo.BuildVersion": {
+    "columns": [
+      "SystemInformationID",
+      "Database Version",
+      "VersionDate",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "dbo.ErrorLog": {
+    "columns": [
+      "ErrorLogID",
+      "ErrorTime",
+      "UserName",
+      "ErrorNumber",
+      "ErrorSeverity",
+      "ErrorState",
+      "ErrorProcedure",
+      "ErrorLine",
+      "ErrorMessage"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.Address": {
+    "columns": [
+      "AddressID",
+      "AddressLine1",
+      "AddressLine2",
+      "City",
+      "StateProvince",
+      "CountryRegion",
+      "PostalCode",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.Customer": {
+    "columns": [
+      "CustomerID",
+      "NameStyle",
+      "Title",
+      "FirstName",
+      "MiddleName",
+      "LastName",
+      "Suffix",
+      "CompanyName",
+      "SalesPerson",
+      "EmailAddress",
+      "Phone",
+      "PasswordHash",
+      "PasswordSalt",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.CustomerAddress": {
+    "columns": [
+      "CustomerID",
+      "AddressID",
+      "AddressType",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.Product": {
+    "columns": [
+      "ProductID",
+      "Name",
+      "ProductNumber",
+      "Color",
+      "StandardCost",
+      "ListPrice",
+      "Size",
+      "Weight",
+      "ProductCategoryID",
+      "ProductModelID",
+      "SellStartDate",
+      "SellEndDate",
+      "DiscontinuedDate",
+      "ThumbNailPhoto",
+      "ThumbnailPhotoFileName",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.ProductCategory": {
+    "columns": [
+      "ProductCategoryID",
+      "ParentProductCategoryID",
+      "Name",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.ProductDescription": {
+    "columns": [
+      "ProductDescriptionID",
+      "Description",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.ProductModel": {
+    "columns": [
+      "ProductModelID",
+      "Name",
+      "CatalogDescription",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.ProductModelProductDescription": {
+    "columns": [
+      "ProductModelID",
+      "ProductDescriptionID",
+      "Culture",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.SalesOrderDetail": {
+    "columns": [
+      "SalesOrderID",
+      "SalesOrderDetailID",
+      "OrderQty",
+      "ProductID",
+      "UnitPrice",
+      "UnitPriceDiscount",
+      "LineTotal",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.SalesOrderHeader": {
+    "columns": [
+      "SalesOrderID",
+      "RevisionNumber",
+      "OrderDate",
+      "DueDate",
+      "ShipDate",
+      "Status",
+      "OnlineOrderFlag",
+      "SalesOrderNumber",
+      "PurchaseOrderNumber",
+      "AccountNumber",
+      "CustomerID",
+      "ShipToAddressID",
+      "BillToAddressID",
+      "ShipMethod",
+      "CreditCardApprovalCode",
+      "SubTotal",
+      "TaxAmt",
+      "Freight",
+      "TotalDue",
+      "Comment",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.vGetAllCategories": {
+    "columns": [
+      "ParentProductCategoryName",
+      "ProductCategoryName",
+      "ProductCategoryID"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.vProductAndDescription": {
+    "columns": [
+      "ProductID",
+      "Name",
+      "ProductModel",
+      "Culture",
+      "Description"
+    ],
+    "description": "No description available."
+  },
+  "SalesLT.vProductModelCatalogDescription": {
+    "columns": [
+      "ProductModelID",
+      "Name",
+      "Summary",
+      "Manufacturer",
+      "Copyright",
+      "ProductURL",
+      "WarrantyPeriod",
+      "WarrantyDescription",
+      "NoOfYears",
+      "MaintenanceDescription",
+      "Wheel",
+      "Saddle",
+      "Pedal",
+      "BikeFrame",
+      "Crankset",
+      "PictureAngle",
+      "PictureSize",
+      "ProductPhotoID",
+      "Material",
+      "Color",
+      "ProductLine",
+      "Style",
+      "RiderExperience",
+      "rowguid",
+      "ModifiedDate"
+    ],
+    "description": "No description available."
+  },
+  "sys.database_firewall_rules": {
+    "columns": [
+      "id",
+      "name",
+      "start_ip_address",
+      "end_ip_address",
+      "create_date",
+      "modify_date"
+    ],
+    "description": "No description available."
+  }
 }

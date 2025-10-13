@@ -21,6 +21,12 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "pydantic-settings>=2.11.0",
     "load-dotenv>=0.1.0",
+    "azure-monitor-opentelemetry-exporter>=1.0.0b43",
+    "azure-monitor-opentelemetry>=1.8.1",
+    "opentelemetry-sdk>=1.37.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.37.0",
+    "opentelemetry-instrumentation-logging>=0.58b0",
+    "azure-core>=1.35.1",
 ]
 
 [tool.uv]
