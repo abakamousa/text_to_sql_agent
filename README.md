@@ -62,12 +62,14 @@ uv sync
 
 This will automatically install all the dependencies from pyproject.toml
 
-2. Install from the pyproject dependencies:
+2. Install dependencies in editable mode
 ```bash
-python -m pip install --upgrade pip
-python -m pip install .
+pip install -e .
 ```
-
+This command installs the project as a local package, allowing imports like
+from backend.services.openai_client import OpenAIClient to work properly
+without manually modifying sys.path.
+Any code changes are immediately reflected without reinstalling.
 # Configuration (.env)
 ## frontend
 - Copy the example files and update:
@@ -95,10 +97,6 @@ streamlit run frontend/streamlit_app.py
 This UI posts JSON to the configured FUNCTION_API_URL (see [frontend/.env](frontend/.env)).
 
 
-- CLI demo script (simple local runner):
-```bash
-python backend/script/run_module.py
-```
 This script exercises SQL execution, guardrails validation and regeneration flows interactively.
 
 - Run Azure Function locally (requires Azure Functions Core Tools):
@@ -108,12 +106,17 @@ func start
 ```
 The function app code is at [backend/azure_function/function_app.py](backend/azure_function/function_app.py).
 
+- CLI script (simple local runner) to test modules:
+```bash
+uv run backend/script/run_module.py
+```
+
 API contract
 - Request model: see [`frontend.models.api_models.SQLQueryRequest`](frontend/models/api_models.py).
 - Response model: see [`frontend.models.api_models.SQLQueryResponse`](frontend/models/api_models.py).
 - The function expects a POST JSON body: { "query": "..." } and returns agent results produced by [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py).
 
-Testing & CI
+Testing & CI (not implemented)
 - Tests folders: [backend/tests](backend/tests) and [frontend/tests](frontend/tests).
 - CI workflows: [.github/workflows/backend.yml](.github/workflows/backend.yml) and [.github/workflows/frontend.yml](.github/workflows/frontend.yml).
 - Run tests:
