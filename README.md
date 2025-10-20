@@ -1,7 +1,6 @@
 # Demo text to Sql application
 
-Lightweight demo that converts natural-language queries into SQL, validates them with guardrails, executes against Azure SQL, and can regenerate/fix failing statements using an LLM.
-
+***Lightweight AI-powered agent*** that transforms natural language queries into SQL, validates them with guardrails, executes securely on Azure SQL, regenerates or fixes invalid statements using an LLM, and automatically recommends clear visualizations (bar, line, scatter, pie, etc.) based on the query results.
 
 # Architecture
 
