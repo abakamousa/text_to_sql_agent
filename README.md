@@ -13,7 +13,9 @@
 ✅ Validates SQL using **custom guardrails**  
 ✅ Executes against **Azure SQL database**  
 ✅ Automatically **regenerates/fixes invalid SQL**  
+✅ Generate natural language summary or answer based on the **SQL query results**
 ✅ Built with **LangChain ReAct** agent pattern  
+✅ Suggest the most suitable visualization for  **Retrieved data**
 ✅ Supports **conversation memory** for multi-turn queries  
 ✅ Deployed as an **Azure Function API**
 
