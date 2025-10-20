@@ -117,7 +117,7 @@ uv run backend/script/run_module.py
 - Response model: see [`frontend.models.api_models.SQLQueryResponse`](frontend/models/api_models.py).
 - The function expects a POST JSON body: { "query": "..." } and returns agent results produced by [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py).
 
-Testing & CI (not implemented)
+## Testing & CI (not implemented yet)
 - Tests folders: [backend/tests](backend/tests) and [frontend/tests](frontend/tests).
 - CI workflows: [.github/workflows/backend.yml](.github/workflows/backend.yml) and [.github/workflows/frontend.yml](.github/workflows/frontend.yml).
 - Run tests:
