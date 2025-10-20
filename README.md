@@ -111,7 +111,7 @@ The function app code is at [backend/azure_function/function_app.py](backend/azu
 uv run backend/script/run_module.py
 ```
 
-API contract
+## API contract
 - Request model: see [`frontend.models.api_models.SQLQueryRequest`](frontend/models/api_models.py).
 - Response model: see [`frontend.models.api_models.SQLQueryResponse`](frontend/models/api_models.py).
 - The function expects a POST JSON body: { "query": "..." } and returns agent results produced by [`orchestrator.agent.run_agent`](backend/orchestrator/agent.py).
