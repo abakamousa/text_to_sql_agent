@@ -4,7 +4,7 @@
 
 # Architecture
 
-<img width="1674" height="672" alt="text_to_agent_archi drawio (1)" src="https://github.com/user-attachments/assets/98cbb907-f065-46df-b2e5-d3e7d3bf1e46" />
+<img width="1674" height="672" alt="text_to_agent_archi drawio (1)" src="https://github.com/user-attachments/assets/b780b1b8-7a72-4dc6-aac3-74a21a8cd4a9" />
 
 
 ## 🚀 Features
