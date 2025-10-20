@@ -1,76 +1,72 @@
-from typing import Dict, Any
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema.output_parser import StrOutputParser
-from langchain_core.runnables import RunnableSequence
-
-from backend.models.settings import settings
+import json
+import logging
 from backend.sql_executor.schema_cache import SchemaCache
 from backend.services.openai_client import OpenAIClient
 
 
 class SQLGenerator:
     """
-    Converts natural language queries into SQL statements
-    using an LLM and database schema context.
-
-    This version uses the new LangChain Runnable interface
-    instead of the deprecated LLMChain.
+    Generates SQL queries from natural language using an LLM,
+    enriched with table schemas and table descriptions from SchemaCache.
     """
 
     def __init__(self):
-        # 🔧 Initialize the OpenAI client via centralized service
-        openai_service = OpenAIClient()
-        self.llm = openai_service.get_llm()
-
+        self.llm = OpenAIClient().get_llm()
         self.schema_cache = SchemaCache()
 
-        # Define prompt using the new ChatPromptTemplate
-        self.prompt = ChatPromptTemplate.from_template(
-            """You are an expert SQL developer.
-            Given the following database schema, write a correct SQL query for the user's question.
+    def _build_schema_context(self) -> str:
+        """
+        Build a text context of all tables and columns for LLM prompt.
+        """
+        schema_dict = self.schema_cache.get_schema()
+        context_lines = []
+        for table_name, info in schema_dict.items():
+            description = info.get("description", "No description available.")
+            columns = ", ".join(info.get("columns", []))
+            context_lines.append(f"Table: {table_name}\nDescription: {description}\nColumns: {columns}\n")
+        return "\n".join(context_lines)
 
-            Schema:
-            {schema}
-
-            Question:
-            {nl_query}
-
-            Output only the SQL query, no explanations or comments."""
-                    )
-
-        # Build the runnable chain: prompt → model → text output
-        self.chain: RunnableSequence = self.prompt | self.llm | StrOutputParser()
 
     def generate(self, nl_query: str) -> str:
-        """Generate SQL text from a natural-language query."""
-        schema_dict = self.schema_cache.get_schema()
-        if not schema_dict:
-            self.schema_cache.load_schema()
-            schema_dict = self.schema_cache.get_schema()
+        """
+        Generate an SQL query from a natural language question using LLM.
+        Includes schema and table descriptions in context.
+        """
+        try:
+            schema_context = self._build_schema_context()
 
-        schema_text = "\n".join(
-            f"{table}: {', '.join(columns)}" for table, columns in schema_dict.items()
-        )
+            prompt = f"""
+            You are a data analyst and SQL expert.
+            Your task is to generate a correct, optimized SQL query based on the user’s natural language request.
 
-        # Run the sequence
-        sql_query = self.chain.invoke({"nl_query": nl_query, "schema": schema_text}).strip()
-        return sql_query
+            Here is the database schema and table descriptions:
 
-    def generate_with_metadata(self, nl_query: str) -> Dict[str, Any]:
-        """Return generated SQL and metadata context."""
-        schema_dict = self.schema_cache.get_schema()
-        if not schema_dict:
-            self.schema_cache.load_schema()
-            schema_dict = self.schema_cache.get_schema()
+            {schema_context}
 
-        schema_text = "\n".join(
-            f"{table}: {', '.join(columns)}" for table, columns in schema_dict.items()
-        )
+            Follow these rules:
+            - Only use tables and columns that exist in the schema above.
+            - Use proper JOINs if relationships are implied.
+            - Do not hallucinate table or column names.
+            - Return ONLY the SQL query, no explanation.
 
-        sql_query = self.chain.invoke({"nl_query": nl_query, "schema": schema_text}).strip()
+            User request:
+            {nl_query}
+            """
 
-        return {
-            "nl_query": nl_query,
-            "schema_used": schema_dict,
-            "generated_sql": sql_query,
-        }
+            logging.info("🧠 Generating SQL for NL query: %s", nl_query)
+            response = self.llm.invoke(prompt)
+
+            # Handle response variations depending on LLM API
+            if isinstance(response, dict) and "content" in response:
+                return response["content"].strip()
+            elif hasattr(response, "content"):
+                return response.content.strip()
+            elif isinstance(response, str):
+                return response.strip()
+            else:
+                logging.warning(" Unexpected LLM response type: %s", type(response))
+                return str(response)
+
+        except Exception as e:
+            logging.exception(f"SQL generation failed: {e}")
+            return f"Error generating SQL: {str(e)}"

@@ -1,48 +1,37 @@
 import pyodbc
-import time
+import datetime
 from backend.models.settings import settings
 
 class SQLExecutor:
-    """
-    Executes SQL queries against Azure SQL Database.
-    Returns results as list of dicts.
-    """
+    """Executes SQL queries against Azure SQL Database."""
 
     def __init__(self):
-        self.connection_string =  settings.sql_connection_string
-        if not self.connection_string:
-            raise ValueError("SQL connection string is not set in environment or settings.")
+        self.conn_str = settings.sql_connection_string
 
     def run_query(self, sql: str) -> dict:
-        """
-        Execute SQL and return structured results.
-        Returns:
-            {
-                "sql": str,
-                "rows": List[Dict[str, Any]],
-                "row_count": int,
-                "execution_time": float (seconds)
-            }
-        """
-        start_time = time.time()
-        rows = []
-
+        """Run a SQL query and return rows as list of dicts with JSON-serializable values."""
         try:
-            with pyodbc.connect(self.connection_string) as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(sql)
-                    columns = [column[0] for column in cursor.description] if cursor.description else []
-                    for row in cursor.fetchall():
-                        rows.append(dict(zip(columns, row)))
+            with pyodbc.connect(self.conn_str) as conn:
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                columns = [column[0] for column in cursor.description]
+                rows = cursor.fetchall()
+
+                result = []
+                for row in rows:
+                    row_dict = {}
+                    for col, val in zip(columns, row):
+                        # Convert datetime/date to ISO string
+                        if isinstance(val, (datetime.datetime, datetime.date)):
+                            row_dict[col] = val.isoformat()
+                        else:
+                            row_dict[col] = val
+                    result.append(row_dict)
+
+                return {
+                    "rows": result,
+                    "row_count": len(result),
+                }
 
         except Exception as e:
             raise RuntimeError(f"SQL execution failed: {e}") from e
-
-        execution_time = time.time() - start_time
-        return {
-            "sql": sql,
-            "rows": rows,
-            "row_count": len(rows),
-            "execution_time": execution_time
-        }
-

@@ -1,11 +1,31 @@
 import logging
 import azure.functions as func
 import json
-
+from decimal import Decimal
+from datetime import datetime
 from backend.orchestrator.agent import run_agent
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+
+
+def convert_json_compatible(obj):
+    """
+    Recursively convert objects to JSON-serializable types:
+    - Decimal -> float
+    - datetime -> ISO string
+    - nested lists/dicts -> recursively converted
+    """
+    if isinstance(obj, list):
+        return [convert_json_compatible(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_json_compatible(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        return float(obj)
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    else:
+        return obj
 
 
 @app.function_name(name="query_agent")
@@ -28,10 +48,14 @@ def query_agent(req: func.HttpRequest) -> func.HttpResponse:
 
         logging.info("Received query: %s", nl_query)
 
+        # Run the agent
         result = run_agent(nl_query)
 
+        # Safely convert all JSON-incompatible objects
+        safe_result = convert_json_compatible(result)
+
         return func.HttpResponse(
-            json.dumps(result, indent=2),
+            json.dumps(safe_result, indent=2),
             status_code=200,
             mimetype="application/json",
         )
@@ -50,5 +74,3 @@ def query_agent(req: func.HttpRequest) -> func.HttpResponse:
             status_code=500,
             mimetype="application/json",
         )
-
-
